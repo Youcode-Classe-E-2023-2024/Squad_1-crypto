@@ -3,10 +3,10 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 // import { Switch } from 'react-router-dom';
 import MarketList from './components/MarketList';
-import AssetList from './components/AssetList';
-import ExchangeList from './components/ExchangeList';
-import AssetDetail from './components/AssetDetail';
-import ExchangeDetail from './components/ExchangeDetail';
+// import AssetList from './components/AssetList';
+// import ExchangeList from './components/ExchangeList';
+// import AssetDetail from './components/AssetDetail';
+// import ExchangeDetail from './components/ExchangeDetail';
 // import { Switch } from 'react-router-dom';
 
 
@@ -22,6 +22,7 @@ function App() {
         <Route  path="/exchange/:id" element={ExchangeDetail} /> */}
       </Routes>
     </Router>
+    
    );
 }
 

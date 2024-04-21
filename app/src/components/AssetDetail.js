@@ -1,10 +1,13 @@
 import React, { Component } from "react";
+import { Line } from "react-chartjs-2";
+
 
 class AssetDetail extends Component {
     constructor(props){
         super(props)
         this.state = {
-            asset: null 
+            asset: null, 
+            chartData: {}
         }
     }
 
@@ -12,15 +15,56 @@ class AssetDetail extends Component {
         fetch('https://api.coincap.io/v2/assets/bitcoin')
             .then(response => response.json())
             .then(res => this.setState({asset: res.data})) 
-            .catch(error => console.error('Error fetching data:', error)); 
+            .catch(error => console.error('Error fetching data:', error));
+
+        this.fetchChartData(); 
     }
 
+
+    fetchChartData = () => {
+        fetch("https://api.coincap.io/v2/assets/bitcoin/history?interval=d1")
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Failed to fetch historical data');
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log("Data received:", data); // Log the data received from the API
+            if (!data || !Array.isArray(data.data)) {
+              throw new Error('Invalid data structure');
+            }
+    
+            // Map over the data to create arrays for prices and timestamps
+            const prices = data.data.map(item => item.priceUsd);
+            const timestamps = data.data.map(item => new Date(item.time)); // Convert timestamps to Date objects
+    
+            // Update the state with the chart data
+            this.setState({
+              chartData: {
+                labels: timestamps,
+                datasets: [
+                  {
+                    label: "Bitcoin Price (USD)",
+                    data: prices,
+                    backgroundColor: "rgba(75, 192, 192, 0.6)",
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1
+                  }
+                ]
+              }
+            });
+          })
+          .catch(error => console.error("Error fetching chart data:", error));
+    };
+    
+    
     render(){
-        const { asset } = this.state;
+        const { asset, chartData } = this.state;
 
         return(
             <div className="Asset">
-                {asset && ( 
+                {asset && chartData && ( 
                     <div className=" bg-blue-100 w-full h-screen px-40 pt-11">
                         
                             <div class="col-span-12" id="user">
@@ -165,8 +209,45 @@ class AssetDetail extends Component {
                                 </div>
                             </div>
                         
+                            <Line
+                              data={this.state.chartData}
+                              options={{
+                                scales: {
+                                  x: {
+                                    type: 'time', // Specify the type of scale for the x-axis
+                                    time: {
+                                      tooltipFormat: 'll', // Format for the tooltip
+                                    },
+                                    title: {
+                                      display: true,
+                                      text: 'Time', // Label for the x-axis
+                                    },
+                                  },
+                                  y: {
+                                    title: {
+                                      display: true,
+                                      text: 'Price (USD)', // Label for the y-axis
+                                    },
+                                  },
+                                },
+                                plugins: {
+                                  legend: {
+                                    display: true,
+                                    position: 'bottom',
+                                  },
+                                },
+                                interaction: {
+                                  mode: 'index',
+                                  intersect: false,
+                                },
+                                responsive: true,
+                              }}
+                            />
+                        
                     </div>
                 )}
+
+                
             </div>
         );
     };

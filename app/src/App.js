@@ -5,10 +5,12 @@ import AssetList from './components/AssetList';
 import ExchangeList from './components/ExchangeList';
 import AssetDetail from './components/AssetDetail';
 import ExchangeDetail from './components/ExchangeDetail';
+import Navbar from './components/Navbar';
 
 function App() {
   return (
     <Router>
+      <Navbar />
       <Routes>
         <Route path="/" element={<MarketList />} />
         <Route path="/assets" element={<AssetList />} />

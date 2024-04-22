@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import DataTable from 'react-data-table-component';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 function Exchanges() {
     const [data, setData] = useState([]);
@@ -14,7 +15,7 @@ function Exchanges() {
         try {
             const response = await axios.get('https://api.coincap.io/v2/exchanges');
             setData(response.data.data);
-            console.log(response.data.data)
+            console.log(response.data.data);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -22,15 +23,19 @@ function Exchanges() {
 
     const columns = [
         { name: 'Rank', selector: row => row.rank, sortable: true },
-        { name: 'ID', selector: row => row.exchangeId, sortable: true }, 
-        { name: 'Name', selector: row => row.name, sortable: true }, 
-        { name: 'Trading Pairs', selector: row => row.tradingPairs, sortable: true }, 
-        { name: 'Updated', selector: row => new Date(row.updated).toLocaleString(), sortable: true }, 
+        { name: 'ID', selector: row => row.exchangeId, sortable: true },
+        {
+            name: 'Name',
+            cell: row => <Link to={`/exchange/${row.exchangeId}`}>{row.name}</Link>,
+            sortable: true
+        },
+        { name: 'Trading Pairs', selector: row => row.tradingPairs, sortable: true },
+        { name: 'Updated', selector: row => new Date(row.updated).toLocaleString(), sortable: true },
     ];
 
     const filteredData = data.filter(item =>
         item.name && item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );  
+    );
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8">
